@@ -1,10 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import SetupScreen from "@/components/SetupScreen";
 import QuestionnaireScreen from "@/components/QuestionnaireScreen";
 import LoadingScreen from "@/components/LoadingScreen";
+import ResultsScreen from "@/components/ResultsScreen";
+import { mockAnswers } from "@/data/mockAnswers";
 
 import {
   AnalysisModel,
@@ -14,28 +16,77 @@ import {
 type Step =
   | "setup"
   | "questionnaire"
-  | "loading";
+  | "loading"
+  | "results";
 
 export default function HomePage() {
-  const [step, setStep] = useState<Step>("setup");
+  const [step, setStep] =
+  useState<Step>("loading");
 
   const [analysisType, setAnalysisType] =
-    useState<AnalysisType | null>(null);
+  useState<AnalysisType | null>("property");
 
   const [model, setModel] =
-    useState<AnalysisModel | null>(null);
+  useState<AnalysisModel | null>("saxis_9");
 
   const [currentQuestionIndex, setCurrentQuestionIndex] =
     useState(0);
 
   const [answers, setAnswers] =
-    useState<Record<string, string>>({});
+  useState<Record<string, string>>(mockAnswers);
+
+    const [analysisResult, setAnalysisResult] =
+  useState<any>(null);
+
+  useEffect(() => {
+  runAnalysis();
+}, []);
+
+async function runAnalysis() {
+  try {
+
+    const response = await fetch(
+      "/api/analyze",
+      {
+        method: "POST",
+
+        headers: {
+          "Content-Type":
+            "application/json",
+        },
+
+        body: JSON.stringify({
+          analysisType,
+          model,
+          answers,
+        }),
+      }
+    );
+
+    const data =
+      await response.json();
+
+    console.log(
+      "AUTO ANALYSIS:",
+      data
+    );
+
+    setAnalysisResult(data);
+
+    setStep("results");
+
+  } catch (error) {
+    console.error(error);
+  }
+}
 
   function handleContinueSetup() {
     if (!analysisType || !model) return;
 
     setStep("questionnaire");
   }
+
+  
 
   function handleAnswer(
     questionId: string,
@@ -48,39 +99,43 @@ export default function HomePage() {
   }
 
   async function handleNextQuestion() {
-  const totalQuestions = 14;
-  const nextIndex = currentQuestionIndex + 1;
+    const totalQuestions = 14;
+    const nextIndex = currentQuestionIndex + 1;
 
-  if (nextIndex >= totalQuestions) {
-    setStep("loading");
+    if (nextIndex >= totalQuestions) {
+      setStep("loading");
 
-    console.log("FINAL ANSWERS:", answers);
+      console.log("FINAL ANSWERS:", answers);
 
-    try {
-      const response = await fetch("/api/analyze", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          analysisType,
-          model,
-          answers,
-        }),
-      });
+      try {
+        const response = await fetch("/api/analyze", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            analysisType,
+            model,
+            answers,
+          }),
+        });
 
-      const data = await response.json();
+        const data = await response.json();
 
-      console.log("AI RESULT:", data);
-    } catch (error) {
-      console.error("ERROR CALLING API:", error);
+        console.log("AI RESULT:", data);
+
+        setAnalysisResult(data);
+
+        setStep("results");
+      } catch (error) {
+        console.error("ERROR CALLING API:", error);
+      }
+
+      return;
     }
 
-    return;
+    setCurrentQuestionIndex(nextIndex);
   }
-
-  setCurrentQuestionIndex(nextIndex);
-}
 
   function handleBackQuestion() {
     setCurrentQuestionIndex((prev) =>
@@ -112,8 +167,15 @@ export default function HomePage() {
       )}
 
       {step === "loading" && (
-        <LoadingScreen />
-      )}
+  <LoadingScreen />
+)}
+
+      {step === "results" &&
+  analysisResult && (
+    <ResultsScreen
+      result={analysisResult}
+    />
+)}
     </main>
   );
 }
