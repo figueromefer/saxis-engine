@@ -242,9 +242,9 @@ ${JSON.stringify(body, null, 2)}
       await anthropic.messages.create({
         model: "claude-sonnet-4-6",
 
-        max_tokens: 9000,
+        max_tokens: 12000,
 
-        temperature: 0.4,
+        temperature: 0.35,
 
         messages: [
           {
