@@ -17,8 +17,7 @@ type Step =
   | "loading";
 
 export default function HomePage() {
-  const [step, setStep] =
-    useState<Step>("setup");
+  const [step, setStep] = useState<Step>("setup");
 
   const [analysisType, setAnalysisType] =
     useState<AnalysisType | null>(null);
@@ -31,9 +30,6 @@ export default function HomePage() {
 
   const [answers, setAnswers] =
     useState<Record<string, string>>({});
-
-  const [analysisResult, setAnalysisResult] =
-    useState<any>(null);
 
   function handleContinueSetup() {
     if (!analysisType || !model) return;
@@ -51,50 +47,21 @@ export default function HomePage() {
     }));
   }
 
-  async function handleNextQuestion() {
-    const totalQuestions =
-      analysisType === "property"
-        ? 14
-        : 14;
+  function handleNextQuestion() {
+    const totalQuestions = 14;
 
     const nextIndex = currentQuestionIndex + 1;
 
     if (nextIndex >= totalQuestions) {
       setStep("loading");
 
-      try {
-
-        const response = await fetch("/api/analyze", {
-          method: "POST",
-
-          headers: {
-            "Content-Type": "application/json",
-          },
-
-          body: JSON.stringify({
-            analysisType,
-            model,
-            answers,
-          }),
-        });
-
-        const data = await response.json();
-
-        console.log("AI RESULT:", data);
-
-        setAnalysisResult(data);
-
-      } catch (error) {
-        console.error(error);
-      }
+      console.log("FINAL ANSWERS:", answers);
 
       return;
     }
 
     setCurrentQuestionIndex(nextIndex);
   }
-
-  
 
   function handleBackQuestion() {
     setCurrentQuestionIndex((prev) =>
@@ -104,7 +71,6 @@ export default function HomePage() {
 
   return (
     <main className="min-h-screen bg-[#080c0f] text-[#d4cfc8] px-6 py-16">
-
       {step === "setup" && (
         <SetupScreen
           analysisType={analysisType}
@@ -115,22 +81,20 @@ export default function HomePage() {
         />
       )}
 
-      {step === "questionnaire" &&
-        analysisType && (
-          <QuestionnaireScreen
-            analysisType={analysisType}
-            currentQuestionIndex={currentQuestionIndex}
-            answers={answers}
-            onAnswer={handleAnswer}
-            onNext={handleNextQuestion}
-            onBack={handleBackQuestion}
-          />
-        )}
+      {step === "questionnaire" && analysisType && (
+        <QuestionnaireScreen
+          analysisType={analysisType}
+          currentQuestionIndex={currentQuestionIndex}
+          answers={answers}
+          onAnswer={handleAnswer}
+          onNext={handleNextQuestion}
+          onBack={handleBackQuestion}
+        />
+      )}
 
-        {step === "loading" && (
-    <LoadingScreen />
-  )}
-
+      {step === "loading" && (
+        <LoadingScreen />
+      )}
     </main>
   );
 }
