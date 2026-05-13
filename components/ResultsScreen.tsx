@@ -23,11 +23,33 @@ if (!parsed) {
   );
 }
 
-  const analysis =
-    parsed.analysis;
+const project =
+  parsed?.project ||
+  parsed?.analysis?.project ||
+  "Strategic Analysis";
 
-  const insights =
-    analysis.insights;
+const intelligence =
+  parsed?.strategic_intelligence ||
+  parsed?.analysis?.strategic_intelligence ||
+  parsed?.analysis?.insights ||
+  parsed?.insights;
+
+  if (!intelligence) {
+    console.log("PARSED ANALYSIS DEBUG:", parsed);
+
+    return (
+      <div className="max-w-4xl mx-auto p-10 text-red-400">
+        <h1 className="text-3xl mb-4">
+          Analysis structure not recognized.
+        </h1>
+
+        <pre className="whitespace-pre-wrap text-xs bg-[#0e1419] border border-zinc-800 rounded-xl p-6 text-zinc-300 overflow-auto max-h-[500px]">
+          {JSON.stringify(parsed, null, 2)}
+        </pre>
+      </div>
+    );
+  }
+
 
   return (
     <div className="max-w-7xl mx-auto">
@@ -39,7 +61,7 @@ if (!parsed) {
         </p>
 
         <h1 className="text-7xl text-[#c8a96e] tracking-[0.12em] mb-8">
-          {analysis.project}
+          {project}
         </h1>
 
         <div className="w-32 h-px bg-zinc-700 mb-10" />
@@ -56,14 +78,14 @@ if (!parsed) {
       />
 
       <div className="grid lg:grid-cols-2 gap-8 mb-24">
-        {insights.asymmetricOpportunities.map(
+        {(intelligence.asymmetricOpportunities || []).map(
           (item: any) => (
             <InsightCard
               key={item.id}
               title={item.title}
-              observation={item.observation}
-              leverage={item.leverage}
-              specificity={item.specificity}
+              observation={item.insight}
+              leverage={item.leverage || item.mechanism || item.implication || item.risk || item.window || item.execution}
+              specificity={item.urgency || item.priority || item.gap || ""}
               color="gold"
             />
           )
@@ -75,14 +97,14 @@ if (!parsed) {
       />
 
       <div className="grid lg:grid-cols-2 gap-8 mb-24">
-        {insights.invisibleLeverage.map(
+        {(intelligence.invisibleLeverage || []).map(
           (item: any) => (
             <InsightCard
               key={item.id}
               title={item.title}
-              observation={item.observation}
-              leverage={item.leverage}
-              specificity={item.specificity}
+              observation={item.insight}
+              leverage={item.leverage || item.mechanism || item.implication || item.risk || item.window || item.execution}
+              specificity={item.urgency || item.priority || item.gap || ""}
               color="blue"
             />
           )
@@ -94,14 +116,14 @@ if (!parsed) {
       />
 
       <div className="grid lg:grid-cols-2 gap-8 mb-24">
-        {insights.hiddenMarketDynamics.map(
+        {(intelligence.hiddenMarketDynamics || []).map(
           (item: any) => (
             <InsightCard
               key={item.id}
               title={item.title}
-              observation={item.observation}
-              leverage={item.leverage}
-              specificity={item.specificity}
+              observation={item.insight}
+              leverage={item.leverage || item.mechanism || item.implication || item.risk || item.window || item.execution}
+              specificity={item.urgency || item.priority || item.gap || ""}
               color="green"
             />
           )
@@ -113,14 +135,14 @@ if (!parsed) {
       />
 
       <div className="grid lg:grid-cols-2 gap-8 mb-24">
-        {insights.strategicContradictions.map(
+        {(intelligence.strategicContradictions || []).map(
           (item: any) => (
             <InsightCard
               key={item.id}
               title={item.title}
-              observation={item.observation}
-              leverage={item.leverage}
-              specificity={item.specificity}
+              observation={item.insight}
+              leverage={item.leverage || item.mechanism || item.implication || item.risk || item.window || item.execution}
+              specificity={item.urgency || item.priority || item.gap || ""}
               color="red"
             />
           )
@@ -132,14 +154,14 @@ if (!parsed) {
       />
 
       <div className="grid lg:grid-cols-2 gap-8 mb-24">
-        {insights.timingAdvantages.map(
+        {(intelligence.timingAdvantages || []).map(
           (item: any) => (
             <InsightCard
               key={item.id}
               title={item.title}
-              observation={item.observation}
-              leverage={item.leverage}
-              specificity={item.specificity}
+              observation={item.insight}
+              leverage={item.leverage || item.mechanism || item.implication || item.risk || item.window || item.execution}
+              specificity={item.urgency || item.priority || item.gap || ""}
               color="purple"
             />
           )
@@ -175,15 +197,15 @@ function InsightCard({
 }: any) {
 
   const colorClasses: Record<string, string> = {
-  gold: "border-[#c8a96e]",
-  blue: "border-[#4a9eba]",
-  green: "border-[#58b26b]",
-  red: "border-[#c65b5b]",
-  purple: "border-[#8b6bd6]",
-};
+    gold: "border-[#c8a96e]",
+    blue: "border-[#4a9eba]",
+    green: "border-[#58b26b]",
+    red: "border-[#c65b5b]",
+    purple: "border-[#8b6bd6]",
+  };
 
-const borderColor =
-  colorClasses[color] || "border-zinc-700";
+  const borderColor =
+    colorClasses[color] || "border-zinc-700";
 
   return (
     <div
