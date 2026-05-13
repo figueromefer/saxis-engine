@@ -17,76 +17,98 @@ type Step =
   | "setup"
   | "questionnaire"
   | "loading"
-  | "results";
+  | "results"
+  | "error";
 
 export default function HomePage() {
-  const [step, setStep] =
-  useState<Step>("loading");
+  const [step, setStep] = useState<Step>("loading");
 
   const [analysisType, setAnalysisType] =
-  useState<AnalysisType | null>("property");
+    useState<AnalysisType | null>("property");
 
   const [model, setModel] =
-  useState<AnalysisModel | null>("saxis_9");
+    useState<AnalysisModel | null>("saxis_9");
 
   const [currentQuestionIndex, setCurrentQuestionIndex] =
     useState(0);
 
   const [answers, setAnswers] =
-  useState<Record<string, string>>(mockAnswers);
+    useState<Record<string, string>>(mockAnswers);
 
-    const [analysisResult, setAnalysisResult] =
-  useState<any>(null);
+  const [analysisResult, setAnalysisResult] =
+    useState<any>(null);
+
+  const [errorMessage, setErrorMessage] =
+    useState<string | null>(null);
 
   useEffect(() => {
-  runAnalysis();
-}, []);
+    runAnalysis();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
-async function runAnalysis() {
-  try {
+  async function callAnalyzeApi() {
+    const response = await fetch("/api/analyze", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        analysisType,
+        model,
+        answers,
+      }),
+    });
 
-    const response = await fetch(
-      "/api/analyze",
-      {
-        method: "POST",
+    const rawText = await response.text();
 
-        headers: {
-          "Content-Type":
-            "application/json",
-        },
+    if (!response.ok) {
+      throw new Error(
+        rawText || `API error: ${response.status}`
+      );
+    }
 
-        body: JSON.stringify({
-          analysisType,
-          model,
-          answers,
-        }),
-      }
-    );
+    if (!rawText) {
+      throw new Error("API returned an empty response.");
+    }
 
-    const data =
-      await response.json();
-
-    console.log(
-      "AUTO ANALYSIS:",
-      data
-    );
-
-    setAnalysisResult(data);
-
-    setStep("results");
-
-  } catch (error) {
-    console.error(error);
+    try {
+      return JSON.parse(rawText);
+    } catch {
+      throw new Error(
+        `API returned invalid JSON: ${rawText.slice(0, 500)}`
+      );
+    }
   }
-}
+
+  async function runAnalysis() {
+    setStep("loading");
+    setErrorMessage(null);
+
+    try {
+      const data = await callAnalyzeApi();
+
+      console.log("AUTO ANALYSIS:", data);
+
+      setAnalysisResult(data);
+      setStep("results");
+    } catch (error) {
+      console.error("ERROR CALLING API:", error);
+
+      setErrorMessage(
+        error instanceof Error
+          ? error.message
+          : "Unknown analysis error"
+      );
+
+      setStep("error");
+    }
+  }
 
   function handleContinueSetup() {
     if (!analysisType || !model) return;
 
     setStep("questionnaire");
   }
-
-  
 
   function handleAnswer(
     questionId: string,
@@ -103,34 +125,8 @@ async function runAnalysis() {
     const nextIndex = currentQuestionIndex + 1;
 
     if (nextIndex >= totalQuestions) {
-      setStep("loading");
-
       console.log("FINAL ANSWERS:", answers);
-
-      try {
-        const response = await fetch("/api/analyze", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            analysisType,
-            model,
-            answers,
-          }),
-        });
-
-        const data = await response.json();
-
-        console.log("AI RESULT:", data);
-
-        setAnalysisResult(data);
-
-        setStep("results");
-      } catch (error) {
-        console.error("ERROR CALLING API:", error);
-      }
-
+      await runAnalysis();
       return;
     }
 
@@ -167,15 +163,35 @@ async function runAnalysis() {
       )}
 
       {step === "loading" && (
-  <LoadingScreen />
-)}
+        <LoadingScreen />
+      )}
 
-      {step === "results" &&
-  analysisResult && (
-    <ResultsScreen
-      result={analysisResult}
-    />
-)}
+      {step === "results" && analysisResult && (
+        <ResultsScreen result={analysisResult} />
+      )}
+
+      {step === "error" && (
+        <div className="max-w-4xl mx-auto border border-red-900/60 bg-[#0e1419] rounded-3xl p-8">
+          <p className="text-xs uppercase tracking-[0.35em] text-red-400 mb-4">
+            Analysis Error
+          </p>
+
+          <h1 className="text-3xl text-white mb-6">
+            No se pudo generar el análisis
+          </h1>
+
+          <pre className="whitespace-pre-wrap text-sm text-zinc-300 bg-[#080c0f] border border-zinc-800 rounded-xl p-6 mb-8 overflow-auto max-h-[420px]">
+            {errorMessage}
+          </pre>
+
+          <button
+            onClick={runAnalysis}
+            className="bg-[#c8a96e] text-black px-8 py-4 rounded-md uppercase tracking-[0.25em] text-xs hover:bg-[#d9bb81] transition-all"
+          >
+            Reintentar análisis
+          </button>
+        </div>
+      )}
     </main>
   );
 }
