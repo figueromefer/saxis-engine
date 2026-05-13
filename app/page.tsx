@@ -4,6 +4,7 @@ import { useState } from "react";
 
 import SetupScreen from "@/components/SetupScreen";
 import QuestionnaireScreen from "@/components/QuestionnaireScreen";
+import LoadingScreen from "@/components/LoadingScreen";
 
 import {
   AnalysisModel,
@@ -12,7 +13,8 @@ import {
 
 type Step =
   | "setup"
-  | "questionnaire";
+  | "questionnaire"
+  | "loading";
 
 export default function HomePage() {
   const [step, setStep] =
@@ -47,8 +49,27 @@ export default function HomePage() {
   }
 
   function handleNextQuestion() {
-    setCurrentQuestionIndex((prev) => prev + 1);
+    const totalQuestions =
+      analysisType === "property"
+        ? 14
+        : 14;
+
+    const nextIndex = currentQuestionIndex + 1;
+
+    if (nextIndex >= totalQuestions) {
+      setStep("loading");
+
+      console.log("FINAL ANSWERS:", answers);
+
+      return;
+    }
+
+    setCurrentQuestionIndex(nextIndex);
   }
+
+  {step === "loading" && (
+    <LoadingScreen />
+  )}
 
   function handleBackQuestion() {
     setCurrentQuestionIndex((prev) =>
