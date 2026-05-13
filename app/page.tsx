@@ -23,10 +23,10 @@ export default function HomePage() {
   const [step, setStep] = useState<Step>("setup");
 
   const [analysisType, setAnalysisType] =
-    useState<AnalysisType | null>("property");
+    useState<AnalysisType | null>(null);
 
   const [model, setModel] =
-    useState<AnalysisModel | null>("saxis_9");
+    useState<AnalysisModel | null>(null);
 
   const [currentQuestionIndex, setCurrentQuestionIndex] =
     useState(0);
