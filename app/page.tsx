@@ -1,12 +1,11 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 import SetupScreen from "@/components/SetupScreen";
 import QuestionnaireScreen from "@/components/QuestionnaireScreen";
 import LoadingScreen from "@/components/LoadingScreen";
 import ResultsScreen from "@/components/ResultsScreen";
-import { mockAnswers } from "@/data/mockAnswers";
 
 import {
   AnalysisModel,
@@ -21,7 +20,7 @@ type Step =
   | "error";
 
 export default function HomePage() {
-  const [step, setStep] = useState<Step>("loading");
+  const [step, setStep] = useState<Step>("setup");
 
   const [analysisType, setAnalysisType] =
     useState<AnalysisType | null>("property");
@@ -33,7 +32,7 @@ export default function HomePage() {
     useState(0);
 
   const [answers, setAnswers] =
-    useState<Record<string, string>>(mockAnswers);
+    useState<Record<string, string>>({});
 
   const [analysisResult, setAnalysisResult] =
     useState<any>(null);
@@ -41,10 +40,10 @@ export default function HomePage() {
   const [errorMessage, setErrorMessage] =
     useState<string | null>(null);
 
-  useEffect(() => {
+  /*useEffect(() => {
     runAnalysis();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, []);*/
 
   async function callAnalyzeApi() {
     const response = await fetch("/api/analyze", {
