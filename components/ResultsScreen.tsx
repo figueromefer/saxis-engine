@@ -1,5 +1,6 @@
 "use client";
 
+import { parseAnalysis } from "@/lib/parseAnalysis";
 type Props = {
   result: any;
 };
@@ -7,122 +8,229 @@ type Props = {
 export default function ResultsScreen({
   result,
 }: Props) {
-  const text =
-  result?.data?.text ||
-  "No analysis generated.";
+
+  const raw =
+    result?.data || "";
+
+  const parsed =
+  parseAnalysis(raw);
+
+if (!parsed) {
+  return (
+    <div className="text-red-500 p-10">
+      Failed to parse analysis JSON.
+    </div>
+  );
+}
+
+  const analysis =
+    parsed.analysis;
+
+  const insights =
+    analysis.insights;
 
   return (
-    <div className="max-w-6xl mx-auto">
+    <div className="max-w-7xl mx-auto">
 
-      <div className="mb-16 border-b border-zinc-800 pb-10">
+      <div className="mb-20">
 
         <p className="text-xs uppercase tracking-[0.45em] text-zinc-500 mb-5">
           Strategic Intelligence Report
         </p>
 
-        <h1 className="text-6xl text-[#c8a96e] tracking-[0.12em] mb-6">
-          ANALYSIS
+        <h1 className="text-7xl text-[#c8a96e] tracking-[0.12em] mb-8">
+          {analysis.project}
         </h1>
 
-        <div className="w-24 h-px bg-zinc-700 mb-8" />
+        <div className="w-32 h-px bg-zinc-700 mb-10" />
 
-        <p className="max-w-2xl text-zinc-500 leading-relaxed">
-          Strategic opportunity mapping, asymmetry detection and execution intelligence.
+        <p className="max-w-3xl text-zinc-400 leading-relaxed text-lg">
+          Strategic asymmetry mapping, territorial leverage detection
+          and execution intelligence analysis.
         </p>
 
       </div>
 
-      <div className="grid lg:grid-cols-[280px_1fr] gap-16">
+      <SectionTitle
+        title="Asymmetric Opportunities"
+      />
 
-        <aside className="space-y-6">
+      <div className="grid lg:grid-cols-2 gap-8 mb-24">
+        {insights.asymmetricOpportunities.map(
+          (item: any) => (
+            <InsightCard
+              key={item.id}
+              title={item.title}
+              observation={item.observation}
+              leverage={item.leverage}
+              specificity={item.specificity}
+              color="gold"
+            />
+          )
+        )}
+      </div>
 
-          <div className="border border-zinc-800 bg-[#0e1419] rounded-2xl p-6">
-            <p className="text-xs uppercase tracking-[0.3em] text-zinc-500 mb-4">
-              Status
-            </p>
+      <SectionTitle
+        title="Invisible Leverage"
+      />
 
-            <div className="flex items-center gap-3">
-              <div className="w-3 h-3 rounded-full bg-[#7ed4a0]" />
+      <div className="grid lg:grid-cols-2 gap-8 mb-24">
+        {insights.invisibleLeverage.map(
+          (item: any) => (
+            <InsightCard
+              key={item.id}
+              title={item.title}
+              observation={item.observation}
+              leverage={item.leverage}
+              specificity={item.specificity}
+              color="blue"
+            />
+          )
+        )}
+      </div>
 
-              <span className="text-sm text-zinc-300">
-                Analysis Complete
-              </span>
-            </div>
-          </div>
+      <SectionTitle
+        title="Hidden Market Dynamics"
+      />
 
-          <div className="border border-zinc-800 bg-[#0e1419] rounded-2xl p-6">
-            <p className="text-xs uppercase tracking-[0.3em] text-zinc-500 mb-5">
-              Intelligence Layers
-            </p>
+      <div className="grid lg:grid-cols-2 gap-8 mb-24">
+        {insights.hiddenMarketDynamics.map(
+          (item: any) => (
+            <InsightCard
+              key={item.id}
+              title={item.title}
+              observation={item.observation}
+              leverage={item.leverage}
+              specificity={item.specificity}
+              color="green"
+            />
+          )
+        )}
+      </div>
 
-            <div className="space-y-4 text-sm text-zinc-400">
+      <SectionTitle
+        title="Strategic Contradictions"
+      />
 
-              <div className="flex justify-between">
-                <span>Visible Opportunities</span>
-                <span className="text-[#4a9eba]">Detected</span>
-              </div>
+      <div className="grid lg:grid-cols-2 gap-8 mb-24">
+        {insights.strategicContradictions.map(
+          (item: any) => (
+            <InsightCard
+              key={item.id}
+              title={item.title}
+              observation={item.observation}
+              leverage={item.leverage}
+              specificity={item.specificity}
+              color="red"
+            />
+          )
+        )}
+      </div>
 
-              <div className="flex justify-between">
-                <span>Hidden Leverage</span>
-                <span className="text-[#c8a96e]">Mapped</span>
-              </div>
+      <SectionTitle
+        title="Timing Advantages"
+      />
 
-              <div className="flex justify-between">
-                <span>Execution Risk</span>
-                <span className="text-[#e05c5c]">Analyzed</span>
-              </div>
+      <div className="grid lg:grid-cols-2 gap-8 mb-24">
+        {insights.timingAdvantages.map(
+          (item: any) => (
+            <InsightCard
+              key={item.id}
+              title={item.title}
+              observation={item.observation}
+              leverage={item.leverage}
+              specificity={item.specificity}
+              color="purple"
+            />
+          )
+        )}
+      </div>
 
-              <div className="flex justify-between">
-                <span>Strategic Timing</span>
-                <span className="text-[#7ed4a0]">Calculated</span>
-              </div>
+    </div>
+  );
+}
 
-            </div>
-          </div>
+function SectionTitle({
+  title,
+}: {
+  title: string;
+}) {
+  return (
+    <div className="mb-10">
+      <h2 className="text-4xl text-[#c8a96e] tracking-[0.08em] mb-4">
+        {title}
+      </h2>
 
-        </aside>
+      <div className="w-20 h-px bg-zinc-700" />
+    </div>
+  );
+}
 
-        <section>
+function InsightCard({
+  title,
+  observation,
+  leverage,
+  specificity,
+  color,
+}: any) {
 
-          <div className="border border-zinc-800 bg-[#0e1419] rounded-3xl p-10">
+  const colorClasses: Record<string, string> = {
+  gold: "border-[#c8a96e]",
+  blue: "border-[#4a9eba]",
+  green: "border-[#58b26b]",
+  red: "border-[#c65b5b]",
+  purple: "border-[#8b6bd6]",
+};
 
-            <div className="mb-10">
-              <p className="text-xs uppercase tracking-[0.35em] text-zinc-500 mb-4">
-                Executive Analysis
-              </p>
+const borderColor =
+  colorClasses[color] || "border-zinc-700";
 
-              <div className="w-16 h-px bg-zinc-700" />
-            </div>
+  return (
+    <div
+      className={`
+        border
+        ${borderColor}
+        bg-[#0e1419]
+        rounded-3xl
+        p-8
+      `}
+    >
 
-            <div className="
-              prose
-              prose-invert
-              max-w-none
-              prose-p:text-zinc-300
-              prose-p:leading-relaxed
-              prose-headings:text-[#c8a96e]
-              prose-strong:text-white
-              prose-li:text-zinc-300
-            ">
-              {text
-                .split("\n")
-                .map((paragraph: string, index: number) => {
-                  if (!paragraph.trim()) return null;
+      <h3 className="text-2xl text-white mb-6 leading-snug">
+        {title}
+      </h3>
 
-                  return (
-                    <p
-                      key={index}
-                      className="mb-6 leading-relaxed"
-                    >
-                      {paragraph}
-                    </p>
-                  );
-                })}
-            </div>
+      <div className="space-y-6 text-zinc-400 leading-relaxed">
 
-          </div>
+        <div>
+          <p className="text-xs uppercase tracking-[0.3em] text-zinc-500 mb-3">
+            Observation
+          </p>
 
-        </section>
+          <p>
+            {observation}
+          </p>
+        </div>
+
+        <div>
+          <p className="text-xs uppercase tracking-[0.3em] text-zinc-500 mb-3">
+            Strategic Leverage
+          </p>
+
+          <p>
+            {leverage}
+          </p>
+        </div>
+
+        <div>
+          <p className="text-xs uppercase tracking-[0.3em] text-zinc-500 mb-3">
+            Specificity
+          </p>
+
+          <p>
+            {specificity}
+          </p>
+        </div>
 
       </div>
 
