@@ -32,6 +32,9 @@ export default function HomePage() {
   const [answers, setAnswers] =
     useState<Record<string, string>>({});
 
+  const [analysisResult, setAnalysisResult] =
+    useState<any>(null);
+
   function handleContinueSetup() {
     if (!analysisType || !model) return;
 
@@ -48,7 +51,7 @@ export default function HomePage() {
     }));
   }
 
-  function handleNextQuestion() {
+  async function handleNextQuestion() {
     const totalQuestions =
       analysisType === "property"
         ? 14
@@ -59,7 +62,31 @@ export default function HomePage() {
     if (nextIndex >= totalQuestions) {
       setStep("loading");
 
-      console.log("FINAL ANSWERS:", answers);
+      try {
+
+        const response = await fetch("/api/analyze", {
+          method: "POST",
+
+          headers: {
+            "Content-Type": "application/json",
+          },
+
+          body: JSON.stringify({
+            analysisType,
+            model,
+            answers,
+          }),
+        });
+
+        const data = await response.json();
+
+        console.log("AI RESULT:", data);
+
+        setAnalysisResult(data);
+
+      } catch (error) {
+        console.error(error);
+      }
 
       return;
     }
@@ -67,9 +94,7 @@ export default function HomePage() {
     setCurrentQuestionIndex(nextIndex);
   }
 
-  {step === "loading" && (
-    <LoadingScreen />
-  )}
+  
 
   function handleBackQuestion() {
     setCurrentQuestionIndex((prev) =>
@@ -101,6 +126,10 @@ export default function HomePage() {
             onBack={handleBackQuestion}
           />
         )}
+
+        {step === "loading" && (
+    <LoadingScreen />
+  )}
 
     </main>
   );
