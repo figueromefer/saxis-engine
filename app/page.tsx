@@ -47,21 +47,40 @@ export default function HomePage() {
     }));
   }
 
-  function handleNextQuestion() {
-    const totalQuestions = 14;
+  async function handleNextQuestion() {
+  const totalQuestions = 14;
+  const nextIndex = currentQuestionIndex + 1;
 
-    const nextIndex = currentQuestionIndex + 1;
+  if (nextIndex >= totalQuestions) {
+    setStep("loading");
 
-    if (nextIndex >= totalQuestions) {
-      setStep("loading");
+    console.log("FINAL ANSWERS:", answers);
 
-      console.log("FINAL ANSWERS:", answers);
+    try {
+      const response = await fetch("/api/analyze", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          analysisType,
+          model,
+          answers,
+        }),
+      });
 
-      return;
+      const data = await response.json();
+
+      console.log("AI RESULT:", data);
+    } catch (error) {
+      console.error("ERROR CALLING API:", error);
     }
 
-    setCurrentQuestionIndex(nextIndex);
+    return;
   }
+
+  setCurrentQuestionIndex(nextIndex);
+}
 
   function handleBackQuestion() {
     setCurrentQuestionIndex((prev) =>
