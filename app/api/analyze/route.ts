@@ -6,7 +6,6 @@ const anthropic = new Anthropic({
 
 export async function POST(req: Request) {
   try {
-
     const body = await req.json();
 
     const prompt = `
@@ -33,203 +32,171 @@ REGLAS DE CALIDAD:
 - Debes convertir datos simples en lectura estratégica.
 - Debes incluir acciones concretas y comercialmente útiles.
 
-ESTRUCTURA OBLIGATORIA:
-Devuelve ÚNICAMENTE JSON válido.
-No uses markdown.
-No uses triple backticks.
-No expliques el JSON.
+REGLAS DE FORMATO:
+- Devuelve ÚNICAMENTE JSON válido.
+- No uses markdown.
+- No uses triple backticks.
+- No expliques el JSON.
+- No uses saltos de línea dentro de strings.
+- Cada string dentro de strategic_intelligence debe tener máximo 45 palabras.
+- Cada sección dentro de strategic_intelligence debe tener exactamente 2 elementos.
+- El reporte debe priorizar densidad estratégica sobre extensión.
 
-El JSON debe tener exactamente esta estructura:
-
+ESTRUCTURA EXACTA:
 {
   "project": "string",
   "model": "string",
   "analysis_type": "string",
-
-  "executive_summary": "string de 120 a 180 palabras. Debe explicar la lectura estratégica general del proyecto.",
-
-  "strategic_verdict": "string de 80 a 130 palabras. Debe decir con claridad si el proyecto está bien posicionado, mal posicionado o parcialmente desalineado, y por qué.",
-
+  "executive_summary": "string máximo 120 palabras",
+  "strategic_verdict": "string máximo 90 palabras",
   "main_tension": {
     "title": "string",
-    "explanation": "string de 80 a 130 palabras",
-    "business_impact": "string de 50 a 90 palabras"
+    "explanation": "string máximo 70 palabras",
+    "business_impact": "string máximo 50 palabras"
   },
-
   "highest_value_move": {
     "title": "string",
-    "why_this_move": "string de 80 a 130 palabras",
-    "first_action": "string de 40 a 80 palabras",
-    "expected_result": "string de 40 a 80 palabras"
+    "why_this_move": "string máximo 70 palabras",
+    "first_action": "string máximo 45 palabras",
+    "expected_result": "string máximo 45 palabras"
   },
-
   "strategic_intelligence": {
     "asymmetric_opportunities": [
       {
         "id": "AO1",
         "title": "string",
-        "strategic_read": "string de 80 a 120 palabras",
-        "why_it_matters": "string de 60 a 100 palabras",
-        "recommended_action": "string de 50 a 90 palabras",
-        "commercial_angle": "string de 40 a 80 palabras",
-        "risk_if_ignored": "string de 40 a 80 palabras"
+        "strategic_read": "string",
+        "why_it_matters": "string",
+        "recommended_action": "string",
+        "commercial_angle": "string",
+        "risk_if_ignored": "string"
       },
       {
         "id": "AO2",
         "title": "string",
-        "strategic_read": "string de 80 a 120 palabras",
-        "why_it_matters": "string de 60 a 100 palabras",
-        "recommended_action": "string de 50 a 90 palabras",
-        "commercial_angle": "string de 40 a 80 palabras",
-        "risk_if_ignored": "string de 40 a 80 palabras"
+        "strategic_read": "string",
+        "why_it_matters": "string",
+        "recommended_action": "string",
+        "commercial_angle": "string",
+        "risk_if_ignored": "string"
       }
     ],
-
     "invisible_leverage": [
       {
         "id": "IL1",
         "title": "string",
-        "strategic_read": "string de 80 a 120 palabras",
-        "why_it_matters": "string de 60 a 100 palabras",
-        "recommended_action": "string de 50 a 90 palabras",
-        "commercial_angle": "string de 40 a 80 palabras",
-        "risk_if_ignored": "string de 40 a 80 palabras"
+        "strategic_read": "string",
+        "why_it_matters": "string",
+        "recommended_action": "string",
+        "commercial_angle": "string",
+        "risk_if_ignored": "string"
       },
       {
         "id": "IL2",
         "title": "string",
-        "strategic_read": "string de 80 a 120 palabras",
-        "why_it_matters": "string de 60 a 100 palabras",
-        "recommended_action": "string de 50 a 90 palabras",
-        "commercial_angle": "string de 40 a 80 palabras",
-        "risk_if_ignored": "string de 40 a 80 palabras"
+        "strategic_read": "string",
+        "why_it_matters": "string",
+        "recommended_action": "string",
+        "commercial_angle": "string",
+        "risk_if_ignored": "string"
       }
     ],
-
     "hidden_market_dynamics": [
       {
         "id": "HM1",
         "title": "string",
-        "strategic_read": "string de 80 a 120 palabras",
-        "why_it_matters": "string de 60 a 100 palabras",
-        "recommended_action": "string de 50 a 90 palabras",
-        "commercial_angle": "string de 40 a 80 palabras",
-        "risk_if_ignored": "string de 40 a 80 palabras"
+        "strategic_read": "string",
+        "why_it_matters": "string",
+        "recommended_action": "string",
+        "commercial_angle": "string",
+        "risk_if_ignored": "string"
       },
       {
         "id": "HM2",
         "title": "string",
-        "strategic_read": "string de 80 a 120 palabras",
-        "why_it_matters": "string de 60 a 100 palabras",
-        "recommended_action": "string de 50 a 90 palabras",
-        "commercial_angle": "string de 40 a 80 palabras",
-        "risk_if_ignored": "string de 40 a 80 palabras"
+        "strategic_read": "string",
+        "why_it_matters": "string",
+        "recommended_action": "string",
+        "commercial_angle": "string",
+        "risk_if_ignored": "string"
       }
     ],
-
     "strategic_contradictions": [
       {
         "id": "SC1",
         "title": "string",
-        "strategic_read": "string de 80 a 120 palabras",
-        "why_it_matters": "string de 60 a 100 palabras",
-        "recommended_action": "string de 50 a 90 palabras",
-        "commercial_angle": "string de 40 a 80 palabras",
-        "risk_if_ignored": "string de 40 a 80 palabras"
+        "strategic_read": "string",
+        "why_it_matters": "string",
+        "recommended_action": "string",
+        "commercial_angle": "string",
+        "risk_if_ignored": "string"
       },
       {
         "id": "SC2",
         "title": "string",
-        "strategic_read": "string de 80 a 120 palabras",
-        "why_it_matters": "string de 60 a 100 palabras",
-        "recommended_action": "string de 50 a 90 palabras",
-        "commercial_angle": "string de 40 a 80 palabras",
-        "risk_if_ignored": "string de 40 a 80 palabras"
+        "strategic_read": "string",
+        "why_it_matters": "string",
+        "recommended_action": "string",
+        "commercial_angle": "string",
+        "risk_if_ignored": "string"
       }
     ],
-
     "timing_advantages": [
       {
         "id": "TA1",
         "title": "string",
-        "strategic_read": "string de 80 a 120 palabras",
-        "why_it_matters": "string de 60 a 100 palabras",
-        "recommended_action": "string de 50 a 90 palabras",
-        "commercial_angle": "string de 40 a 80 palabras",
-        "risk_if_ignored": "string de 40 a 80 palabras"
+        "strategic_read": "string",
+        "why_it_matters": "string",
+        "recommended_action": "string",
+        "commercial_angle": "string",
+        "risk_if_ignored": "string"
       },
       {
         "id": "TA2",
         "title": "string",
-        "strategic_read": "string de 80 a 120 palabras",
-        "why_it_matters": "string de 60 a 100 palabras",
-        "recommended_action": "string de 50 a 90 palabras",
-        "commercial_angle": "string de 40 a 80 palabras",
-        "risk_if_ignored": "string de 40 a 80 palabras"
+        "strategic_read": "string",
+        "why_it_matters": "string",
+        "recommended_action": "string",
+        "commercial_angle": "string",
+        "risk_if_ignored": "string"
       }
     ],
-
     "execution_risks": [
       {
         "id": "ER1",
         "title": "string",
-        "strategic_read": "string de 80 a 120 palabras",
-        "why_it_matters": "string de 60 a 100 palabras",
-        "recommended_action": "string de 50 a 90 palabras",
-        "commercial_angle": "string de 40 a 80 palabras",
-        "risk_if_ignored": "string de 40 a 80 palabras"
+        "strategic_read": "string",
+        "why_it_matters": "string",
+        "recommended_action": "string",
+        "commercial_angle": "string",
+        "risk_if_ignored": "string"
       },
       {
         "id": "ER2",
         "title": "string",
-        "strategic_read": "string de 80 a 120 palabras",
-        "why_it_matters": "string de 60 a 100 palabras",
-        "recommended_action": "string de 50 a 90 palabras",
-        "commercial_angle": "string de 40 a 80 palabras",
-        "risk_if_ignored": "string de 40 a 80 palabras"
+        "strategic_read": "string",
+        "why_it_matters": "string",
+        "recommended_action": "string",
+        "commercial_angle": "string",
+        "risk_if_ignored": "string"
       }
     ]
   },
-
   "priority_actions": {
     "next_30_days": [
-      {
-        "action": "string",
-        "reason": "string",
-        "expected_impact": "string"
-      },
-      {
-        "action": "string",
-        "reason": "string",
-        "expected_impact": "string"
-      },
-      {
-        "action": "string",
-        "reason": "string",
-        "expected_impact": "string"
-      }
+      { "action": "string máximo 35 palabras", "reason": "string máximo 30 palabras", "expected_impact": "string máximo 30 palabras" },
+      { "action": "string máximo 35 palabras", "reason": "string máximo 30 palabras", "expected_impact": "string máximo 30 palabras" },
+      { "action": "string máximo 35 palabras", "reason": "string máximo 30 palabras", "expected_impact": "string máximo 30 palabras" }
     ],
     "next_90_days": [
-      {
-        "action": "string",
-        "reason": "string",
-        "expected_impact": "string"
-      },
-      {
-        "action": "string",
-        "reason": "string",
-        "expected_impact": "string"
-      },
-      {
-        "action": "string",
-        "reason": "string",
-        "expected_impact": "string"
-      }
+      { "action": "string máximo 35 palabras", "reason": "string máximo 30 palabras", "expected_impact": "string máximo 30 palabras" },
+      { "action": "string máximo 35 palabras", "reason": "string máximo 30 palabras", "expected_impact": "string máximo 30 palabras" },
+      { "action": "string máximo 35 palabras", "reason": "string máximo 30 palabras", "expected_impact": "string máximo 30 palabras" }
     ],
     "critical_metric": {
       "name": "string",
-      "why_it_matters": "string",
-      "how_to_track": "string"
+      "why_it_matters": "string máximo 35 palabras",
+      "how_to_track": "string máximo 35 palabras"
     }
   }
 }
@@ -238,38 +205,28 @@ PROJECT DATA:
 ${JSON.stringify(body, null, 2)}
 `;
 
-    const completion =
-      await anthropic.messages.create({
-        model: "claude-sonnet-4-6",
+    const completion = await anthropic.messages.create({
+      model: "claude-sonnet-4-6",
+      max_tokens: 7000,
+      temperature: 0.2,
+      messages: [
+        {
+          role: "user",
+          content: prompt,
+        },
+      ],
+    });
 
-        max_tokens: 12000,
+    const rawText = completion.content[0];
 
-        temperature: 0.35,
-
-        messages: [
-          {
-            role: "user",
-            content: prompt,
-          },
-        ],
-      });
-
-    const rawText =
-      completion.content[0];
-
-    if (
-      rawText.type !== "text"
-    ) {
-      throw new Error(
-        "Unexpected response type"
-      );
+    if (rawText.type !== "text") {
+      throw new Error("Unexpected response type");
     }
 
     return Response.json({
       success: true,
       data: rawText.text,
     });
-
   } catch (error) {
     console.error(error);
 
