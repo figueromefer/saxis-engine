@@ -2,7 +2,9 @@
 
 import { useState } from "react";
 
-import SetupScreen from "@/components/SetupScreen";
+import CompanySetupScreen, {
+  CompanyFormData,
+} from "@/components/CompanySetupScreen";
 import QuestionnaireScreen from "@/components/QuestionnaireScreen";
 import LoadingScreen from "@/components/LoadingScreen";
 import ResultsScreen from "@/components/ResultsScreen";
@@ -21,14 +23,27 @@ type Step =
   | "completed"
   | "error";
 
+const DEFAULT_ANALYSIS_TYPE: AnalysisType = "venture";
+const DEFAULT_ANALYSIS_MODEL: AnalysisModel = "saxis-9";
+
+const initialCompany: CompanyFormData = {
+  name: "",
+  contactName: "",
+  industry: "",
+  contactEmail: "",
+};
+
 export default function HomePage() {
   const [step, setStep] = useState<Step>("setup");
 
   const [analysisType, setAnalysisType] =
-    useState<AnalysisType | null>(null);
+    useState<AnalysisType | null>(DEFAULT_ANALYSIS_TYPE);
 
   const [model, setModel] =
-    useState<AnalysisModel | null>(null);
+    useState<AnalysisModel | null>(DEFAULT_ANALYSIS_MODEL);
+
+  const [company, setCompany] =
+    useState<CompanyFormData>(initialCompany);
 
   const [currentQuestionIndex, setCurrentQuestionIndex] =
     useState(0);
@@ -54,6 +69,7 @@ export default function HomePage() {
       body: JSON.stringify({
         analysisType,
         model,
+        company,
         answers,
       }),
     });
@@ -86,14 +102,7 @@ export default function HomePage() {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        company: {
-          name:
-            answers.q001_company_description ||
-            "Empresa sin nombre capturado",
-          industry: "",
-          contactName: "",
-          contactEmail: "",
-        },
+        company,
         answers,
         metadata: {
           analysisType,
@@ -171,8 +180,8 @@ export default function HomePage() {
   }
 
   function handleContinueSetup() {
-    if (!analysisType || !model) return;
-
+    setAnalysisType(DEFAULT_ANALYSIS_TYPE);
+    setModel(DEFAULT_ANALYSIS_MODEL);
     setStep("questionnaire");
   }
 
@@ -207,8 +216,9 @@ export default function HomePage() {
 
   function resetFlow() {
     setStep("setup");
-    setAnalysisType(null);
-    setModel(null);
+    setAnalysisType(DEFAULT_ANALYSIS_TYPE);
+    setModel(DEFAULT_ANALYSIS_MODEL);
+    setCompany(initialCompany);
     setCurrentQuestionIndex(0);
     setAnswers({});
     setAnalysisResult(null);
@@ -219,11 +229,9 @@ export default function HomePage() {
   return (
     <main className="min-h-screen bg-[#080c0f] text-[#d4cfc8] px-6 py-16">
       {step === "setup" && (
-        <SetupScreen
-          analysisType={analysisType}
-          model={model}
-          onSelectType={setAnalysisType}
-          onSelectModel={setModel}
+        <CompanySetupScreen
+          company={company}
+          onChange={setCompany}
           onContinue={handleContinueSetup}
         />
       )}
