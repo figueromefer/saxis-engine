@@ -6,6 +6,7 @@ import SetupScreen from "@/components/SetupScreen";
 import QuestionnaireScreen from "@/components/QuestionnaireScreen";
 import LoadingScreen from "@/components/LoadingScreen";
 import ResultsScreen from "@/components/ResultsScreen";
+import CompletionScreen from "@/components/CompletionScreen";
 
 import {
   AnalysisModel,
@@ -17,6 +18,7 @@ type Step =
   | "questionnaire"
   | "loading"
   | "results"
+  | "completed"
   | "error";
 
 export default function HomePage() {
@@ -37,13 +39,11 @@ export default function HomePage() {
   const [analysisResult, setAnalysisResult] =
     useState<any>(null);
 
-  const [errorMessage, setErrorMessage] =
+  const [submittedDiagnosticId, setSubmittedDiagnosticId] =
     useState<string | null>(null);
 
-  /*useEffect(() => {
-    runAnalysis();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);*/
+  const [errorMessage, setErrorMessage] =
+    useState<string | null>(null);
 
   async function callAnalyzeApi() {
     const response = await fetch("/api/analyze", {
@@ -55,6 +55,51 @@ export default function HomePage() {
         analysisType,
         model,
         answers,
+      }),
+    });
+
+    const rawText = await response.text();
+
+    if (!response.ok) {
+      throw new Error(
+        rawText || `API error: ${response.status}`
+      );
+    }
+
+    if (!rawText) {
+      throw new Error("API returned an empty response.");
+    }
+
+    try {
+      return JSON.parse(rawText);
+    } catch {
+      throw new Error(
+        `API returned invalid JSON: ${rawText.slice(0, 500)}`
+      );
+    }
+  }
+
+  async function submitDiagnostic() {
+    const response = await fetch("/api/diagnostics", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        company: {
+          name:
+            answers.q001_company_description ||
+            "Empresa sin nombre capturado",
+          industry: "",
+          contactName: "",
+          contactEmail: "",
+        },
+        answers,
+        metadata: {
+          analysisType,
+          model,
+          submittedFrom: "public_questionnaire",
+        },
       }),
     });
 
@@ -103,6 +148,28 @@ export default function HomePage() {
     }
   }
 
+  async function saveDiagnosticSubmission() {
+    setStep("loading");
+    setErrorMessage(null);
+
+    try {
+      const data = await submitDiagnostic();
+
+      setSubmittedDiagnosticId(data.diagnosticId || null);
+      setStep("completed");
+    } catch (error) {
+      console.error("ERROR SUBMITTING DIAGNOSTIC:", error);
+
+      setErrorMessage(
+        error instanceof Error
+          ? error.message
+          : "Unknown diagnostic submission error"
+      );
+
+      setStep("error");
+    }
+  }
+
   function handleContinueSetup() {
     if (!analysisType || !model) return;
 
@@ -125,7 +192,7 @@ export default function HomePage() {
 
     if (nextIndex >= totalQuestions) {
       console.log("FINAL ANSWERS:", answers);
-      await runAnalysis();
+      await saveDiagnosticSubmission();
       return;
     }
 
@@ -136,6 +203,17 @@ export default function HomePage() {
     setCurrentQuestionIndex((prev) =>
       Math.max(prev - 1, 0)
     );
+  }
+
+  function resetFlow() {
+    setStep("setup");
+    setAnalysisType(null);
+    setModel(null);
+    setCurrentQuestionIndex(0);
+    setAnswers({});
+    setAnalysisResult(null);
+    setSubmittedDiagnosticId(null);
+    setErrorMessage(null);
   }
 
   return (
@@ -169,14 +247,21 @@ export default function HomePage() {
         <ResultsScreen result={analysisResult} />
       )}
 
+      {step === "completed" && (
+        <CompletionScreen
+          diagnosticId={submittedDiagnosticId}
+          onReset={resetFlow}
+        />
+      )}
+
       {step === "error" && (
         <div className="max-w-4xl mx-auto border border-red-900/60 bg-[#0e1419] rounded-3xl p-8">
           <p className="text-xs uppercase tracking-[0.35em] text-red-400 mb-4">
-            Analysis Error
+            Submission Error
           </p>
 
           <h1 className="text-3xl text-white mb-6">
-            No se pudo generar el análisis
+            No se pudo guardar el diagnóstico
           </h1>
 
           <pre className="whitespace-pre-wrap text-sm text-zinc-300 bg-[#080c0f] border border-zinc-800 rounded-xl p-6 mb-8 overflow-auto max-h-[420px]">
@@ -184,10 +269,10 @@ export default function HomePage() {
           </pre>
 
           <button
-            onClick={runAnalysis}
+            onClick={saveDiagnosticSubmission}
             className="bg-[#c8a96e] text-black px-8 py-4 rounded-md uppercase tracking-[0.25em] text-xs hover:bg-[#d9bb81] transition-all"
           >
-            Reintentar análisis
+            Reintentar envío
           </button>
         </div>
       )}
