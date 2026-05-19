@@ -17,6 +17,44 @@ function extractJson(raw: string) {
   return JSON.parse(trimmed.slice(start, end + 1));
 }
 
+async function parseOrRepairJson(raw: string) {
+  try {
+    return extractJson(raw);
+  } catch (parseError) {
+    console.error("INITIAL_JSON_PARSE_ERROR", parseError);
+
+    const repairPrompt = `Corrige el siguiente contenido para que sea JSON válido.
+
+Reglas estrictas:
+- Devuelve únicamente un objeto JSON válido.
+- No uses markdown.
+- No uses triple backticks.
+- No agregues explicación.
+- No cambies el significado del análisis.
+- No agregues campos nuevos.
+- Corrige únicamente errores de sintaxis: comas, comillas, arrays, objetos o strings mal cerrados.
+- Si encuentras texto imposible de representar, conviértelo en string válido.
+
+CONTENIDO A CORREGIR:
+${raw}`;
+
+    const repaired = await anthropic.messages.create({
+      model: "claude-sonnet-4-6",
+      max_tokens: 6000,
+      temperature: 0,
+      messages: [{ role: "user", content: repairPrompt }],
+    });
+
+    const repairedText = repaired.content[0];
+
+    if (repairedText.type !== "text") {
+      throw new Error("Unexpected repair response type");
+    }
+
+    return extractJson(repairedText.text);
+  }
+}
+
 export async function POST(
   _request: Request,
   { params }: { params: Promise<{ id: string }> }
@@ -100,6 +138,18 @@ Debes detectar y analizar:
 
 Responde SIEMPRE en español.
 Devuelve ÚNICAMENTE JSON válido, sin markdown, sin backticks y sin explicación adicional.
+
+REGLAS ESTRICTAS DE JSON:
+- Devuelve un único objeto JSON válido.
+- No uses comentarios.
+- No uses comas finales.
+- No uses saltos de línea dentro de strings.
+- No uses comillas dobles dentro de strings; si necesitas citar algo, usa comillas simples.
+- No agregues texto antes ni después del JSON.
+- No agregues campos fuera de la estructura solicitada.
+- Si no tienes suficiente información para estimar algo, escribe "No estimable con los datos disponibles" como string.
+- Todas las listas deben tener exactamente 3 elementos, excepto fragility_index.factors que debe tener entre 3 y 5 elementos.
+- Antes de responder, verifica que el resultado pueda pasar por JSON.parse().
 
 Estructura exacta:
 {
@@ -217,8 +267,8 @@ ${JSON.stringify(projectData, null, 2)}
 
     const completion = await anthropic.messages.create({
       model: "claude-sonnet-4-6",
-      max_tokens: 5000,
-      temperature: 0.2,
+      max_tokens: 6000,
+      temperature: 0.1,
       messages: [{ role: "user", content: prompt }],
     });
 
@@ -228,7 +278,7 @@ ${JSON.stringify(projectData, null, 2)}
       throw new Error("Unexpected response type");
     }
 
-    const parsed = extractJson(rawText.text);
+    const parsed = await parseOrRepairJson(rawText.text);
 
     await prisma.aiAnalysis.upsert({
       where: { diagnosticId: diagnostic.id },
