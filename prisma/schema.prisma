@@ -1,0 +1,65 @@
+generator client {
+ provider = "prisma-client-js"
+}
+
+datasource db {
+ provider = "postgresql"
+ url = env("DATABASE_URL")
+ directUrl = env("DIRECT_URL")
+}
+
+enum DiagnosticStatus {
+ PENDING
+ PROCESSING
+ COMPLETED
+ ERROR
+}
+
+model Company {
+ id String @id @default(cuid())
+ name String
+ industry String?
+ contactName String?
+ contactEmail String?
+ createdAt DateTime @default(now())
+ diagnostics Diagnostic[]
+}
+
+model Diagnostic {
+ id String @id @default(cuid())
+ companyId String
+ status DiagnosticStatus @default(PENDING)
+ questionnaireVersion String @default("AXISSCAN_V1")
+ createdAt DateTime @default(now())
+ company Company @relation(fields:[companyId],references:[id])
+ answers Answer[]
+ analysis AiAnalysis?
+}
+
+model Question {
+ id String @id
+ block String
+ title String
+ inputType String
+ order Int
+ isBaseline Boolean @default(false)
+ answers Answer[]
+}
+
+model Answer {
+ id String @id @default(cuid())
+ diagnosticId String
+ questionId String
+ value String
+ diagnostic Diagnostic @relation(fields:[diagnosticId],references:[id])
+ question Question @relation(fields:[questionId],references:[id])
+}
+
+model AiAnalysis {
+ id String @id @default(cuid())
+ diagnosticId String @unique
+ executiveSummary String?
+ strategicVerdict String?
+ rawResponse Json?
+ diagnostic Diagnostic @relation(fields:[diagnosticId],references:[id])
+}
