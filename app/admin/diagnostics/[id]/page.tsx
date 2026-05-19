@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import GenerateAnalysisButton from "@/components/GenerateAnalysisButton";
+import AdminAnalysisReport from "@/components/AdminAnalysisReport";
 
 export const dynamic = "force-dynamic";
 
@@ -37,7 +38,7 @@ export default async function DiagnosticDetailPage({
 
   return (
     <main className="min-h-screen bg-[#080c0f] text-[#d4cfc8] px-6 py-12">
-      <section className="max-w-5xl mx-auto">
+      <section className="max-w-6xl mx-auto">
         <div className="mb-10">
           <p className="text-xs uppercase tracking-[0.35em] text-[#c8a96e] mb-4">
             Diagnóstico interno
@@ -58,24 +59,10 @@ export default async function DiagnosticDetailPage({
           <GenerateAnalysisButton diagnosticId={diagnostic.id} />
         )}
 
-        {diagnostic.analysis && (
-          <section className="border border-[#26333a] bg-[#0e1419] rounded-3xl p-8 mb-8">
-            <p className="text-xs uppercase tracking-[0.25em] text-[#c8a96e] mb-4">
-              Resultado interno AXISSCAN™
-            </p>
-
-            <h2 className="text-2xl text-white mb-6">
-              {diagnostic.analysis.strategicVerdict}
-            </h2>
-
-            <div className="text-zinc-300 leading-8 whitespace-pre-wrap">
-              {JSON.stringify(
-                diagnostic.analysis.rawResponse,
-                null,
-                2
-              )}
-            </div>
-          </section>
+        {diagnostic.analysis?.rawResponse && (
+          <AdminAnalysisReport
+            analysis={diagnostic.analysis.rawResponse}
+          />
         )}
 
         <div className="space-y-6">
