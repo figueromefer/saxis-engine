@@ -9,6 +9,7 @@ import QuestionnaireScreen from "@/components/QuestionnaireScreen";
 import LoadingScreen from "@/components/LoadingScreen";
 import ResultsScreen from "@/components/ResultsScreen";
 import CompletionScreen from "@/components/CompletionScreen";
+import { baseQuestions } from "@/data/questions";
 
 import {
   AnalysisModel,
@@ -196,7 +197,7 @@ export default function HomePage() {
   }
 
   async function handleNextQuestion() {
-    const totalQuestions = 14;
+    const totalQuestions = baseQuestions.length;
     const nextIndex = currentQuestionIndex + 1;
 
     if (nextIndex >= totalQuestions) {
