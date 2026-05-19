@@ -25,7 +25,7 @@ type Step =
   | "error";
 
 const DEFAULT_ANALYSIS_TYPE: AnalysisType = "venture";
-const DEFAULT_ANALYSIS_MODEL: AnalysisModel = "saxis-9";
+const DEFAULT_ANALYSIS_MODEL: AnalysisModel = "saxis_9";
 
 const initialCompany: CompanyFormData = {
   name: "",
