@@ -11,147 +11,91 @@ export type Question = {
 
 export const baseQuestions: Question[] = [
   {
-    id: "name",
-    label: "¿Cómo se llama el proyecto, propiedad o iniciativa?",
-    hint: "El nombre muchas veces revela posicionamiento, intención o narrativa.",
-    placeholder: "Ej. Torre Aurora / StudioGrid / Hacienda Cinco",
+    id: "q001_company_description",
+    label: "¿Cuál es el nombre de la empresa y a qué se dedica en una oración?",
+    hint: "Describe la empresa de forma concreta. Esta respuesta también se usará como referencia interna del diagnóstico.",
+    placeholder: "Ej. Bóveda Creativa es una agencia enfocada en estrategia digital y desarrollo web.",
   },
-
   {
-    id: "targetMarket",
-    label: "¿Quién crees que es el cliente, comprador o usuario ideal?",
-    hint: "No describas demographics únicamente. Describe comportamiento y motivaciones.",
-    placeholder:
-      "Ej. Familias buscando patrimonio aspiracional cerca de la ciudad...",
+    id: "q002_business_age",
+    label: "¿Cuántos años lleva operando el negocio?",
+    hint: "Si es menos de un año, indique los meses.",
+    placeholder: "Ej. 3 años / 8 meses / 12 años",
   },
-
   {
-    id: "mainGoal",
-    label: "¿Qué quieres lograr realmente con este proyecto?",
-    hint: "No solo dinero. ¿Liquidez? ¿Posicionamiento? ¿Flujo? ¿Autoridad? ¿Escalabilidad?",
-    placeholder:
-      "Ej. Generar flujo constante mientras aumenta plusvalía...",
+    id: "q003_business_stage",
+    label: "¿En qué etapa considera que se encuentra el negocio actualmente?",
+    hint: "Arranque / Crecimiento / Consolidación / Expansión.",
+    placeholder: "Ej. Crecimiento, pero con operación todavía muy dependiente del dueño.",
   },
-
   {
-    id: "currentStage",
-    label: "¿En qué etapa está actualmente?",
-    hint: "La etapa cambia completamente las oportunidades disponibles.",
-    placeholder:
-      "Idea / validación / construcción / operación / estancamiento...",
+    id: "q004_team_size",
+    label: "¿Cuántas personas trabajan en la empresa incluyendo socios, empleados y colaboradores?",
+    hint: "Incluye equipo fijo, socios activos, freelancers recurrentes y colaboradores clave.",
+    placeholder: "Ej. 12 personas",
   },
-
   {
-    id: "constraints",
-    label: "¿Cuál es el principal cuello de botella o limitante?",
-    hint: "Capital, tiempo, permisos, diferenciación, mercado, ejecución, etc.",
-    placeholder:
-      "Ej. Dependemos demasiado de recomendaciones y no tenemos sistema comercial...",
+    id: "q005_main_challenge",
+    label: "En una sola oración: ¿cuál es el mayor problema o reto que enfrenta hoy el negocio?",
+    hint: "No hay respuesta incorrecta. Sea directo y específico.",
+    placeholder: "Ej. Dependemos demasiado de referidos y no tenemos un sistema comercial predecible.",
   },
-
   {
-    id: "knownOpportunities",
-    label: "¿Cuáles son las oportunidades OBVIAS que ya detectaste?",
-    hint: "Queremos separar lo evidente de lo no evidente.",
-    placeholder:
-      "Ej. Crecimiento de la zona, poca competencia premium...",
+    id: "q006_monthly_transactions",
+    label: "¿Cuántas operaciones o transacciones de venta realiza al mes en promedio?",
+    hint: "Métrica base. Ventas, pedidos, servicios prestados o contratos cerrados. Si varía, usa promedio de 3 meses.",
+    placeholder: "Ej. 40 ventas al mes / entre 25 y 35 contratos",
   },
-
   {
-    id: "suspectedOpportunities",
-    label: "¿Qué sientes que podría existir pero aún no logras comprobar?",
-    hint: "Aquí normalmente aparecen oportunidades invisibles.",
-    placeholder:
-      "Ej. Sospecho que hay demanda extranjera no atendida...",
+    id: "q007_monthly_revenue",
+    label: "¿Cuál es el monto total de ventas o ingresos mensuales aproximados?",
+    hint: "Métrica base. Puede ser rango. Este dato es confidencial y calibra el diagnóstico.",
+    placeholder: "Ej. $80,000 - $120,000 MXN mensuales",
   },
-
   {
-    id: "risks",
-    label: "¿Qué es lo que más te preocupa de este proyecto?",
-    hint: "Los riesgos percibidos ayudan a detectar riesgos ocultos.",
-    placeholder:
-      "Ej. Que el mercado ya esté saturado sin que nos demos cuenta...",
+    id: "q008_average_ticket",
+    label: "¿Cuál es el ticket promedio por venta o transacción?",
+    hint: "Métrica base. Valor promedio de cada venta individual.",
+    placeholder: "Ej. $3,500 MXN por venta",
   },
-
   {
-    id: "competitorsOrAlternatives",
-    label: "¿Contra qué compite realmente?",
-    hint: "A veces el verdadero competidor no es obvio.",
-    placeholder:
-      "Ej. No competimos con otros desarrollos, sino con rentas temporales...",
+    id: "q009_active_clients",
+    label: "¿Cuántos clientes activos tiene actualmente?",
+    hint: "Métrica base. Clientes que han comprado en los últimos 90 días.",
+    placeholder: "Ej. 85 clientes activos",
   },
-
   {
-    id: "availableAssets",
-    label: "¿Qué activos o ventajas ya tienes que otros podrían subestimar?",
-    hint: "Territorio, contactos, marca, experiencia, ubicación, narrativa, comunidad...",
-    placeholder:
-      "Ej. Tenemos acceso directo a inversionistas y una marca ya posicionada...",
+    id: "q010_repeat_customer_percentage",
+    label: "¿Qué porcentaje aproximado de sus ventas proviene de clientes que regresan a comprar de nuevo?",
+    hint: "Métrica base. Ejemplo: 30% nuevos, 70% recurrentes.",
+    placeholder: "Ej. 60% recurrentes / 40% nuevos",
   },
-
   {
-    id: "timeline",
-    label: "¿Cuál es la ventana de tiempo ideal para ejecutar esto?",
-    hint: "El timing es uno de los factores más importantes del sistema.",
-    placeholder:
-      "Ej. Los próximos 18 meses antes de que entren competidores grandes...",
+    id: "q011_customer_channels",
+    label: "¿Por qué canales llegan la mayoría de sus clientes hoy?",
+    hint: "Redes sociales / Referidos / Publicidad pagada / Búsqueda en Google / Tráfico físico / Otro.",
+    placeholder: "Ej. Principalmente referidos y redes sociales; poco tráfico desde Google.",
+  },
+  {
+    id: "q012_marketing_budget",
+    label: "¿Tienen presupuesto definido para atraer clientes? ¿Cuánto invierten al mes aproximadamente en marketing o publicidad?",
+    hint: "Si no hay presupuesto definido, escríbalo así.",
+    placeholder: "Ej. No hay presupuesto fijo / invertimos aprox. $15,000 MXN mensuales en ads.",
+  },
+  {
+    id: "q013_customer_acquisition_cost",
+    label: "¿Saben cuánto les cuesta conseguir un cliente nuevo — su costo de adquisición?",
+    hint: "Sí lo sabemos con precisión / tenemos una idea aproximada / no lo hemos calculado.",
+    placeholder: "Ej. Tenemos una idea aproximada, pero no lo medimos formalmente.",
+  },
+  {
+    id: "q014_best_customer_channel",
+    label: "¿Han identificado qué canal o fuente genera los mejores clientes?",
+    hint: "No los más baratos, sino los más valiosos. Describa brevemente.",
+    placeholder: "Ej. Los referidos corporativos compran más rápido y con mayor ticket.",
   },
 ];
 
-export const propertyQuestions: Question[] = [
-  {
-    id: "location",
-    label: "¿Dónde está ubicada la propiedad o activo?",
-    hint: "El territorio es más importante que el inmueble aislado.",
-    placeholder:
-      "Ciudad, zona, contexto territorial, cercanía con desarrollos, etc.",
-    appliesTo: ["property"],
-  },
+export const propertyQuestions: Question[] = [];
 
-  {
-    id: "propertyTransformation",
-    label: "¿Qué transformación está viviendo la zona?",
-    hint: "Las oportunidades más grandes suelen aparecer antes del consenso.",
-    placeholder:
-      "Ej. Nuevos desarrollos, turismo creciente, cambio demográfico...",
-    appliesTo: ["property"],
-  },
-
-  {
-    id: "propertyNarrative",
-    label: "¿Cómo se vende actualmente esta propiedad y cómo CREES que debería venderse?",
-    hint: "Aquí suelen aparecer oportunidades narrativas invisibles.",
-    placeholder:
-      "Ej. Se vende como terreno, pero podría venderse como activo estratégico...",
-    appliesTo: ["property"],
-  },
-];
-
-export const ventureQuestions: Question[] = [
-  {
-    id: "ventureDistribution",
-    label: "¿Cómo llegan actualmente los clientes o usuarios?",
-    hint: "La distribución suele ser más importante que el producto.",
-    placeholder:
-      "Ej. Referidos, ads, comunidad, ventas directas, partnerships...",
-    appliesTo: ["venture"],
-  },
-
-  {
-    id: "ventureAsymmetry",
-    label: "¿Qué entiendes o ves del mercado que otros parecen ignorar?",
-    hint: "Aquí nacen muchas ventajas asimétricas.",
-    placeholder:
-      "Ej. El mercado no quiere más opciones, quiere menos fricción...",
-    appliesTo: ["venture"],
-  },
-
-  {
-    id: "ventureLeverage",
-    label: "¿Qué parte del modelo podría escalar sin crecer proporcionalmente en costos?",
-    hint: "Buscamos leverage oculto.",
-    placeholder:
-      "Ej. Automatización, comunidad, distribución, licenciamiento...",
-    appliesTo: ["venture"],
-  },
-];
+export const ventureQuestions: Question[] = [];
